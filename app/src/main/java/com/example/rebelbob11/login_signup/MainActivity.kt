@@ -1,5 +1,6 @@
 package com.example.rebelbob11.login_signup
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -13,6 +14,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var email:String
     lateinit var password:String
 
+    lateinit var sharedPreferences:SharedPreferences
+
 
 
 
@@ -21,20 +24,32 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
 
-
+    sharedPreferences = getSharedPreferences("User Info",Context.MODE_PRIVATE)
 
 
         btn_login.setOnClickListener {
 
-            email = text_email.text.toString()
-            password = text_password.text.toString()
+            if (!sharedPreferences.contains("EMAIL")){
+                email = text_email.text.toString()
+                password = text_password.text.toString()
 
-            if (chck_remember.isChecked){
-                
+                if (chck_remember.isChecked){
+                    remember_user(email,password)
+
+                }
+
+                login_user(email,password)
+
+            }
+            else{
+                get_user()
             }
 
 
-            login_user(email,password)
+
+
+
+
 
         }
 
@@ -47,6 +62,32 @@ class MainActivity : AppCompatActivity() {
 
 
         }
+    }
+
+    private fun get_user() {
+
+
+
+        sharedPreferences = getSharedPreferences("User Info",Context.MODE_PRIVATE)
+        val eml = sharedPreferences.getString("EMAIL"," ")
+        val pwd = sharedPreferences.getString("PASSWORD"," ")
+
+        login_user(eml,pwd);
+
+
+
+
+    }
+
+    private fun remember_user(email: String, password: String) {
+
+        sharedPreferences = getSharedPreferences("User Info",Context.MODE_PRIVATE)
+
+        val editor = sharedPreferences.edit()
+        editor.putString("EMAIL",email)
+        editor.putString("PASSWORD",password)
+        editor.apply()
+
     }
 
     private fun signup_user(email: String, password: String) {
